@@ -1,0 +1,50 @@
+{
+  "id": "hanji-light",
+  "title": "Hanji Light",
+  "subtitle": "D pyeongjo, 4/4. Winds enter at A, brass at B. The easiest to conduct.",
+  "jangdan": "gutgeori (straight four)",
+  "key": "D",
+  "mode": "pyeongjo",
+  "bpm": 88,
+  "beatsPerBar": 4,
+  "form": ["Intro", "A", "B", "A2", "Coda"],
+  "phrases": {
+    "Intro": {
+      "bars": 2,
+      "dyn": [0.35, 0.4],
+      "strings": "[D3 A3 D4 F#4]:4 | [B2 F#3 D4 F#4]:4",
+      "percussion": "K:1 T:1 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 R:1"
+    },
+    "A": {
+      "bars": 8,
+      "dyn": [0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.6, 0.5],
+      "strings": "[D3 A3 D4 F#4]:4 | [B2 F#3 D4 F#4]:4 | [E3 A3 B3 E4]:4 | [A2 E3 A3 B3]:4 | [D3 A3 D4 F#4]:4 | [B2 F#3 D4 F#4]:4 | [E3 A3 B3 E4]:4 | [D3 A3 D4 F#4]:4",
+      "winds": "A4:1 B4:0.5 D5:0.5 E5:2 | D5:1 B4:1 A4:2 | B4:1 D5:0.5 E5:0.5 F#5:1.5 E5:0.5 | E5:4 | F#5:1 E5:0.5 D5:0.5 B4:1 A4:1 | B4:1.5 D5:0.5 B4:1 F#4:1 | E4:1 F#4:0.5 A4:0.5 B4:1 E5:1 | D5:4",
+      "percussion": "D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 K:0.5 T:0.5 R:1 D:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 K:0.5 T:0.5 R:1 D:1"
+    },
+    "B": {
+      "bars": 8,
+      "dyn": [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.75, 0.7],
+      "strings": "[B2 F#3 B3 D4]:4 | ~:4 | [E3 A3 B3 E4]:4 | ~:4 | [D3 A3 D4 F#4]:4 | ~:4 | [A2 E3 A3 B3]:4 | ~:4",
+      "winds": "r:2 F#5:2 | D5:2 B4:2 | r:2 E5:1 F#5:1 | A5:4 | F#5:2 E5:1 D5:1 | B4:4 | r:1 A4:1 B4:1 E5:1 | E5:4",
+      "brass": "B2:2 F#3:2 | B2:4 | E3:2 B3:2 | A3:4 | D3:2 A3:2 | F#3:2 A3:1 D4:1 | A2:2 E3:2 | A3:4",
+      "percussion": "D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 K:0.5 T:0.5 R:1 D:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:0.5 T:0.5 K:0.5 T:0.5 R:1 D:1>"
+    },
+    "A2": {
+      "bars": 8,
+      "dyn": [0.8, 0.8, 0.85, 0.8, 0.9, 0.85, 0.75, 0.65],
+      "strings": "[D3 A3 D4 F#4]:4 | [B2 F#3 D4 F#4]:4 | [E3 A3 B3 E4]:4 | [A2 E3 A3 B3]:4 | [D3 A3 D4 F#4]:4 | [B2 F#3 D4 F#4]:4 | [E3 A3 B3 E4]:4 | [D3 A3 D4 F#4]:4",
+      "winds": "A5:1 B5:0.5 D6:0.5 E6:2 | D6:1 B5:1 A5:2 | B5:1 D6:0.5 E6:0.5 F#6:1.5 E6:0.5 | E6:4 | F#6:1 E6:0.5 D6:0.5 B5:1 A5:1 | B5:1.5 D6:0.5 B5:1 F#5:1 | E5:1 F#5:0.5 A5:0.5 B5:1 E6:1 | D6:4",
+      "brass": "D3:4 | B2:4 | E3:4 | A2:4 | D3:1> F#3:1 A3:2 | B3:2 F#3:2 | E3:2 B3:2 | D3:4",
+      "percussion": "D:1> T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 K:0.5 T:0.5 R:1 D:1 | D:1> T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 T:0.5 T:0.5 K:1 T:1 | D:1 K:0.5 T:0.5 R:1 D:1"
+    },
+    "Coda": {
+      "bars": 2,
+      "dyn": [0.6, 0.5],
+      "strings": "[D3 A3 D4 F#4 A4]:4 | ~:4",
+      "winds": "D5:4 | ~:4",
+      "brass": "[D3 A3]:4 | ~:4",
+      "percussion": "D:1> r:3 | B:4"
+    }
+  }
+}
