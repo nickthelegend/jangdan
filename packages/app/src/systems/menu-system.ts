@@ -23,10 +23,13 @@ export class MenuSystem extends createSystem({ menu: { required: [WristMenu] } }
     this.conductor = c;
   }
 
-  init(): void {
+  private lookups = 0;
+
+  /** The panel is authored in the scene; resolve it once the level has loaded. */
+  private resolve(): void {
     const panel = this.world.getSceneObject<UIKitMLAsset>('wrist-menu');
     if (!panel) {
-      console.error('[jangdan] wrist menu panel missing from the scene');
+      if (++this.lookups === 600) console.error('[jangdan] wrist menu panel "wrist-menu" never appeared in the scene');
       return;
     }
     this.panel = panel;
@@ -65,6 +68,7 @@ export class MenuSystem extends createSystem({ menu: { required: [WristMenu] } }
   }
 
   update(dt: number): void {
+    if (!this.panel) this.resolve();
     const panel = this.panel;
     const c = this.conductor;
     if (!panel || !c) return;

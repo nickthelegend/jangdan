@@ -67,7 +67,7 @@ export interface CompiledPiece {
   notes: NoteEvent[];
   totalBeats: number;
   totalBars: number;
-  /** Section entrances after a rest of at least a bar: the moments a conductor cues. */
+  /** Section entrances after a rest of at least two bars: the moments a conductor cues. */
   entries: Entry[];
   /** Rehearsal marks: phrase name and starting beat, in order. */
   marks: { phrase: string; beat: number; bar: number }[];
@@ -202,14 +202,14 @@ export function compilePiece(json: PieceJson): CompiledPiece {
   return { json, notes, totalBeats, totalBars: barCursor, entries: findEntries(notes, bpb), marks, barDynamics };
 }
 
-/** An entry is a section's first note after at least one silent bar (the downbeat at beat 0 doesn't need a cue). */
+/** An entry is a section's first note, or its first after two or more silent bars (beat 0 needs no cue). */
 export function findEntries(notes: readonly NoteEvent[], beatsPerBar: number): Entry[] {
   const out: Entry[] = [];
   const soundingUntil: Record<SectionId, number> = { strings: 0, winds: 0, brass: 0, percussion: 0 };
   const seen: Record<SectionId, boolean> = { strings: false, winds: false, brass: false, percussion: false };
   for (const n of notes) {
     const gap = n.beat - soundingUntil[n.section];
-    if (n.beat > 0 && (!seen[n.section] || gap >= beatsPerBar - 1e-6)) {
+    if (n.beat > 0 && (!seen[n.section] || gap >= 2 * beatsPerBar - 1e-6)) {
       if (!out.some((e) => e.section === n.section && Math.abs(e.beat - n.beat) < 1e-6)) {
         out.push({ section: n.section, beat: n.beat, bar: n.bar, phrase: n.phrase });
       }

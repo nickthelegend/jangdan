@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jangdan · conduct a light orchestra in your room</title>
+  <meta name="description" content="A mixed-reality light orchestra for Meta Quest 3. Your right hand sets the tempo, your left the dynamics; four sections play from your real walls and table.">
+  <meta name="theme-color" content="#f4efe6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;600;700&family=Kode+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="system-bar">
+    <a class="brand" href="#A">Jangdan <span lang="ko">장단</span></a>
+    <nav aria-label="Rehearsal letters">
+      <a href="#A" title="Overture">A</a>
+      <a href="#B" title="How it plays">B</a>
+      <a href="#C" title="Your room">C</a>
+      <a href="#D" title="Pieces">D</a>
+      <a href="#E" title="Honest notes">E</a>
+      <a href="#F" title="Run it">F</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- A: hero system. The tempo marking sits above the stave as in a printed score. -->
+    <section id="A" class="system hero" aria-labelledby="hero-title">
+      <div class="rehearsal"><span>A</span><small>bar 1</small></div>
+      <p class="tempo">Allegretto, <span class="mono">♩ = 88</span> · <em>con mani</em></p>
+      <h1 id="hero-title">Your room is the hall.</h1>
+      <p class="lede">Raise your hands and four sections of a light orchestra take their places on your real walls and table.
+        Your right hand sets the tempo, your left sets the dynamics, and every note washes over the surface it plays from.</p>
+      <div class="score">
+        <div class="staves" aria-hidden="true">
+          <div class="stave" style="--c: var(--blue)"><b>Strings</b><i></i></div>
+          <div class="stave" style="--c: var(--yellow)"><b>Winds</b><i></i></div>
+          <div class="stave" style="--c: var(--red)"><b>Brass</b><i></i></div>
+          <div class="stave" style="--c: var(--ink)"><b>Janggu</b><i></i></div>
+          <div class="playhead"></div>
+        </div>
+        <figure class="clip">
+          <video id="hero-clip" src="assets/jangdan-whoa.mp4" poster="assets/jangdan-poster.jpg" muted playsinline loop autoplay preload="metadata" aria-describedby="clip-cap">
+            <track kind="captions" src="assets/jangdan-whoa.vtt" srclang="en" label="English" default>
+          </video>
+          <figcaption id="clip-cap">Real emulator recording (IWER, Meta Quest 3 profile, synthetic living room). Sound is off here; captions on.</figcaption>
+        </figure>
+      </div>
+      <p class="ctas"><a class="btn" href="#F">Run it on a Quest</a> <a class="btn ghost" href="#B">How it plays</a></p>
+    </section>
+
+    <!-- B -->
+    <section id="B" class="system" aria-labelledby="b-title">
+      <div class="rehearsal"><span>B</span><small>bar 9</small></div>
+      <h2 id="b-title">How it plays</h2>
+      <div class="parts">
+        <div class="part" style="--c: var(--blue)"><b>Right hand</b><p>Raise it, drop it: that downbeat starts a one-bar count-in. Every ictus after that sets the tempo, 60 to 160 BPM.</p></div>
+        <div class="part" style="--c: var(--yellow)"><b>Left palm</b><p>Its height is the dynamics, <span class="mono">pp</span> at your lap to <span class="mono">ff</span> at eye level. Louder floods more of the wall with colour.</p></div>
+        <div class="part" style="--c: var(--red)"><b>Point &amp; pinch</b><p>Point a hand at a section's wall and pinch to cue it. Hold the pinch 0.6 s to solo, again to mute.</p></div>
+        <div class="part" style="--c: var(--ink)"><b>Fist</b><p>Either hand. The orchestra stops on the spot, the walls go dark, and one bell rings.</p></div>
+      </div>
+      <p class="aside">Palm up opens the wrist menu: pieces, <em>Listen</em> (the orchestra plays itself, your hands paint light), <em>Ghost</em> (replay your last take), calm light, one-hand mode, latency calibration.</p>
+    </section>
+
+    <!-- C -->
+    <section id="C" class="system" aria-labelledby="c-title">
+      <div class="rehearsal"><span>C</span><small>bar 17</small></div>
+      <h2 id="c-title">The real room decides</h2>
+      <ol class="bars">
+        <li><span class="mono">17</span><p><b>Where each section sits.</b> Detected planes carry no labels, so Jangdan reads orientation and height: left wall for strings, right for winds, front wall or ceiling for brass, the table for the janggu.</p></li>
+        <li><span class="mono">18</span><p><b>Where the light falls.</b> Each wash is drawn on the plane's own polygon, so the colour stops at the real wall's edge.</p></li>
+        <li><span class="mono">19</span><p><b>Where the sound comes from.</b> An HRTF panner sits at each surface's centroid.</p></li>
+        <li><span class="mono">20</span><p><b>How it rings.</b> The room's bounding box gives a volume; Sabine's formula gives a decay time; the impulse response is generated in code. A small office is dry. A loft is wet.</p></li>
+        <li><span class="mono">21</span><p><b>When a wall is missing</b>, a paper banner hangs where it would be, and it says so.</p></li>
+      </ol>
+    </section>
+
+    <!-- D -->
+    <section id="D" class="system" aria-labelledby="d-title">
+      <div class="rehearsal"><span>D</span><small>bar 25</small></div>
+      <h2 id="d-title">Pieces</h2>
+      <div class="pieces">
+        <article><h3>Hanji Light</h3><p class="mono">D pyeongjo · 4/4 · ♩ = 88 · 76 s</p><p>Winds enter at A, brass at B. The easiest to conduct.</p></article>
+        <article><h3>Semachi Rain</h3><p class="mono">A gyemyeonjo · 3 beats · ♩. = 72 · 80 s</p><p>Slow and swaying; the brass waits for your cue.</p></article>
+        <article><h3>Hwimori Lanterns</h3><p class="mono">G pyeongjo · fast 4 · ♩ = 132 · 65 s</p><p>Brass calls, winds answer, the drums take C alone.</p></article>
+        <article><h3>Daily</h3><p class="mono">seeded · new every UTC day</p><p>A voice-led generative piece in a seeded mode and key. Everyone gets the same one today.</p></article>
+      </div>
+      <p class="aside">All sound is synthesised with Web Audio (FM and wavetable voices, a synthesised janggu and jing). No samples.</p>
+    </section>
+
+    <!-- E -->
+    <section id="E" class="system" aria-labelledby="e-title">
+      <div class="rehearsal"><span>E</span><small>bar 33</small></div>
+      <h2 id="e-title">Honest notes</h2>
+      <ul class="notes">
+        <li>Built and tested in the IWER emulator with emulated hands (Quest 3 and Meta VR Glasses profiles). The numbers are in <span class="mono">TESTING.md</span>.</li>
+        <li><b>Not yet verified on a headset:</b> Quest Browser audio latency (the calibration tap exists for it), real hand-tracking velocity noise, and 72 fps.</li>
+        <li>Quest 3 has no eye tracking: cues use the hand ray. Only on Meta VR Glasses does "look at the strings and pinch" use real eye gaze.</li>
+      </ul>
+    </section>
+
+    <!-- F -->
+    <section id="F" class="system" aria-labelledby="f-title">
+      <div class="rehearsal"><span>F</span><small>bar 41</small></div>
+      <h2 id="f-title">Run it</h2>
+      <p>Quest 3 or 3S, hand tracking on, a room with Space Setup done (walls and a table help; banners cover the rest). Open the URL in the Meta Quest Browser, tap <em>Enter the hall</em>, sit down, raise your right hand.</p>
+      <p class="aside">The public URL goes here once the team publishes it.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Jangdan · Meta VR Start Developer Competition 2026 entry · Entertainment · New Experience.</p>
+    <p>MIT License © 2026 Nivesh Gajengi. Fonts: Familjen Grotesk and Kode Mono (OFL). Not affiliated with Meta.</p>
+  </footer>
+</body>
+</html>

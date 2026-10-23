@@ -10,6 +10,7 @@ import {
   Matrix4,
   Quaternion,
   RayInteractable,
+  Raycaster,
   SRGBColorSpace,
   Vector2,
   Vector3,
@@ -131,6 +132,50 @@ export class StageSystem extends createSystem({
         if (vs === VisibilityState.NonImmersive) this.teardown();
       }),
     );
+  }
+
+  /**
+   * Test helper: are the light decals inside the real planes? Each wash vertex of a real-plane section is
+   * cast back onto IWSDK's own plane mesh (built independently from the same XRPlane polygon).
+   */
+  decalCheck(): Record<string, { vertices: number; inside: number; maxOffPlane: number } | null> {
+    const st = rt.stage;
+    const out: Record<string, { vertices: number; inside: number; maxOffPlane: number } | null> = {};
+    if (!st) return out;
+    const ray = new Raycaster();
+    const planes = [...this.queries.planes.entities].map((e) => e.object3D!).filter(Boolean);
+    for (const sec of SECTIONS) {
+      const v = st.sections[sec];
+      if (v.banner || !v.surfaceId?.startsWith('plane-')) {
+        out[sec] = null;
+        continue;
+      }
+      v.root.updateWorldMatrix(true, true);
+      const nrm = new Vector3(0, 1, 0).transformDirection(v.root.matrixWorld);
+      const plane = planes.find((p) => p.getWorldPosition(new Vector3()).distanceTo(v.root.getWorldPosition(new Vector3())) < 0.005);
+      if (!plane) {
+        out[sec] = { vertices: 0, inside: 0, maxOffPlane: Infinity };
+        continue;
+      }
+      const pos = v.wash.mesh.geometry.getAttribute('position');
+      let inside = 0;
+      let maxOff = 0;
+      const w = new Vector3();
+      const c = new Vector3(v.wash.center.x, 0, v.wash.center.y).applyMatrix4(v.root.matrixWorld);
+      for (let i = 0; i < pos.count; i++) {
+        w.fromBufferAttribute(pos, i).applyMatrix4(v.wash.mesh.matrixWorld);
+        // nudge 1 mm toward the centre so a vertex exactly on the edge counts as on the plane
+        const p = w.clone().lerp(c, 0.002);
+        ray.set(p.clone().addScaledVector(nrm, 0.05), nrm.clone().negate());
+        const hit = ray.intersectObject(plane, false)[0];
+        if (hit && hit.distance < 0.07) {
+          inside++;
+          maxOff = Math.max(maxOff, Math.abs(hit.distance - 0.05));
+        }
+      }
+      out[sec] = { vertices: pos.count, inside, maxOffPlane: +maxOff.toFixed(4) };
+    }
+    return out;
   }
 
   /** Force a fresh assignment (menu: none yet; also used by tests). */

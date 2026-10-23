@@ -353,9 +353,14 @@ export class ConductorSystem extends createSystem({}) {
     const t0 = performance.now();
     if (this.visibilityState.peek() === VisibilityState.NonImmersive || !rt.engine) return;
     const eng = rt.engine;
-    if (eng.ctx.state !== 'running' && t0 - this.lastResume > 1000) {
-      this.lastResume = t0;
-      void eng.resume();
+    if (eng.ctx.state !== 'running') {
+      // browsers only start audio after a user gesture; an XR pinch counts as one
+      const sel = (this.input.xr as unknown as { getSelectState(h: 'left' | 'right'): { start: boolean } });
+      const pinched = sel.getSelectState?.('left')?.start || sel.getSelectState?.('right')?.start;
+      if (pinched || t0 - this.lastResume > 1000) {
+        this.lastResume = t0;
+        void eng.resume();
+      }
     }
     const frame = this.xrFrame as XRFrame | undefined;
     const ref = this.renderer.xr.getReferenceSpace();
@@ -375,6 +380,12 @@ export class ConductorSystem extends createSystem({}) {
       while (this.timeline.length && this.timeline[0].time <= now) this.timeline.shift()!.run();
     }
 
+    if (eng.ctx.state !== 'running') {
+      status.phase = 'scan';
+      status.caption = 'Pinch to start the sound';
+      status.sub = 'The browser holds audio until you interact';
+      return;
+    }
     if (!rt.stage) {
       status.phase = 'scan';
       status.caption = 'Finding your walls...';

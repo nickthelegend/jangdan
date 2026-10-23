@@ -43,3 +43,7 @@ pids/
 .cursor/mcp.json
 .vscode/mcp.json
 .codex/config.toml
+
+# e2e scratch (recordings are muxed into grokbot/videos/jangdan)
+e2e/.params.json
+e2e/results/rec/

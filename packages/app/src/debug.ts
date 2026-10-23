@@ -40,6 +40,8 @@ export function timeSystem(sys: { update(d: number, t: number): void }): void {
   };
 }
 
+let capture: { rec: MediaRecorder; chunks: Blob[]; dest: MediaStreamAudioDestinationNode; startedAt: number } | null = null;
+
 export function installDebug(world: World, c: ConductorSystem, hud: HudSystem, stage: StageSystem): void {
   void world;
   (window as unknown as { __jangdan: unknown }).__jangdan = {
@@ -102,5 +104,43 @@ export function installDebug(world: World, c: ConductorSystem, hud: HudSystem, s
       for (const a of [metrics.cpu, metrics.frameMs, metrics.draws, metrics.tris]) a.length = 0;
     },
     rescan: () => stage.rescan(),
+    decalCheck: () => stage.decalCheck(),
+    washes: () => {
+      const st = rt.stage;
+      if (!st) return null;
+      return Object.fromEntries(
+        SECTIONS.map((s) => {
+          const u = st.sections[s].wash.material.uniforms;
+          return [s, { level: +u.uLevel.value.toFixed(3), dyn: +u.uDyn.value.toFixed(3), dark: +u.uDark.value.toFixed(3), hover: +u.uHover.value.toFixed(3), cue: +u.uCue.value.toFixed(3) }];
+        }),
+      );
+    },
+    /** Record the program output (what the listener hears, before the speakers) for test clips. */
+    startCapture: () => {
+      const e = rt.engine;
+      if (!e) throw new Error('audio engine not ready');
+      const dest = e.ctx.createMediaStreamDestination();
+      e.listener.getInput().connect(dest);
+      const rec = new MediaRecorder(dest.stream, { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 160000 });
+      const chunks: Blob[] = [];
+      rec.ondataavailable = (ev) => chunks.push(ev.data);
+      rec.start(250);
+      capture = { rec, chunks, dest, startedAt: performance.now() };
+      return { contextTime: e.ctx.currentTime, state: e.ctx.state };
+    },
+    stopCapture: async () => {
+      const c = capture;
+      if (!c) throw new Error('no capture running');
+      capture = null;
+      await new Promise<void>((resolve) => {
+        c.rec.onstop = () => resolve();
+        c.rec.stop();
+      });
+      rt.engine?.listener.getInput().disconnect(c.dest);
+      const buf = new Uint8Array(await new Blob(c.chunks, { type: 'audio/webm' }).arrayBuffer());
+      let bin = '';
+      for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+      return { base64: btoa(bin), bytes: buf.length, seconds: (performance.now() - c.startedAt) / 1000 };
+    },
   };
 }

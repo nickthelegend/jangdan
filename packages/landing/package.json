@@ -1,0 +1,10 @@
+{
+  "name": "@jangdan/landing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "One-page Jangdan landing, laid out as an orchestral full score. Static HTML/CSS, no build step.",
+  "scripts": {
+    "serve": "python3 -m http.server 8090"
+  },
+  "license": "MIT"
+}
