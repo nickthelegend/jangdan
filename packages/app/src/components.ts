@@ -1,11 +1,14 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+import { createComponent, defineComponents, Types } from '@iwsdk/core';
 
-import { defineComponents } from '@iwsdk/core';
-import { Robot } from './robot-component.js';
+export const SectionEnum = { strings: 'strings', winds: 'winds', brass: 'brass', percussion: 'percussion' } as const;
 
-export default defineComponents([Robot]);
+/** A section's light surface (a real plane, a furniture top or a paper banner): the ray/gaze cue target. */
+export const SectionTarget = createComponent('SectionTarget', {
+  section: { type: Types.Enum, enum: SectionEnum, default: SectionEnum.strings },
+  banner: { type: Types.Boolean, default: false },
+});
+
+/** Tag for the palm-up wrist menu panel. */
+export const WristMenu = createComponent('WristMenu', {});
+
+export default defineComponents([SectionTarget, WristMenu]);

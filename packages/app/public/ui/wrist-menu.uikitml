@@ -1,0 +1,90 @@
+<!--
+  Jangdan wrist menu. Opens on the left palm when it faces up; poke with the right index finger
+  (or ray + pinch, or gaze + pinch on Meta VR Glasses). Every button is at least 4 cm tall.
+  Obangsaek palette: ink #121014, hanji #f4efe6, blue #1f4fbf, red #d6322b, yellow #f2b705.
+-->
+<style>
+  .root {
+    flex-direction: column;
+    width: 26;
+    padding-top: 1.4;
+    padding-bottom: 1.4;
+    padding-left: 1.4;
+    padding-right: 1.4;
+    gap: 0.9;
+    background-color: #121014;
+    border-radius: 1.6;
+    border-width: 0.15;
+    border-color: #3a3540;
+  }
+  .eyebrow {
+    color: #f2b705;
+    font-size: 1.1;
+    font-weight: 700;
+    letter-spacing: 0.12;
+  }
+  .status {
+    color: #f4efe6;
+    font-size: 1.35;
+  }
+  .row {
+    flex-direction: row;
+    gap: 0.7;
+  }
+  .btn {
+    flex-grow: 1;
+    height: 4.4;
+    border-radius: 1;
+    background-color: #24202a;
+    border-width: 0.12;
+    border-color: #3a3540;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .btn:hover {
+    background-color: #332d3b;
+    border-color: #f4efe6;
+  }
+  .btn:active {
+    background-color: #1f4fbf;
+  }
+  .label {
+    color: #f4efe6;
+    font-size: 1.35;
+    font-weight: 600;
+  }
+  .rule {
+    height: 0.1;
+    background-color: #3a3540;
+  }
+</style>
+<div class="root" id="menu-root">
+  <span class="eyebrow" id="menu-eyebrow">JANGDAN · MENU</span>
+  <span class="status" id="menu-status">Hanji Light · conduct</span>
+  <div class="rule"></div>
+  <span class="eyebrow">PIECE</span>
+  <div class="row">
+    <button class="btn" id="btn-piece-0"><span class="label" id="lbl-piece-0">Hanji</span></button>
+    <button class="btn" id="btn-piece-1"><span class="label" id="lbl-piece-1">Semachi</span></button>
+  </div>
+  <div class="row">
+    <button class="btn" id="btn-piece-2"><span class="label" id="lbl-piece-2">Hwimori</span></button>
+    <button class="btn" id="btn-piece-3"><span class="label" id="lbl-piece-3">Daily</span></button>
+  </div>
+  <span class="eyebrow">MODE</span>
+  <div class="row">
+    <button class="btn" id="btn-conduct"><span class="label" id="lbl-conduct">Conduct</span></button>
+    <button class="btn" id="btn-listen"><span class="label" id="lbl-listen">Listen</span></button>
+    <button class="btn" id="btn-ghost"><span class="label" id="lbl-ghost">Ghost</span></button>
+  </div>
+  <span class="eyebrow">COMFORT</span>
+  <div class="row">
+    <button class="btn" id="btn-flash"><span class="label" id="lbl-flash">Calm light</span></button>
+    <button class="btn" id="btn-onehand"><span class="label" id="lbl-onehand">One hand</span></button>
+  </div>
+  <div class="row">
+    <button class="btn" id="btn-calibrate"><span class="label" id="lbl-calibrate">Calibrate</span></button>
+    <button class="btn" id="btn-exit"><span class="label" id="lbl-exit">Exit</span></button>
+  </div>
+</div>

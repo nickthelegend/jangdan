@@ -1,16 +1,52 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <link rel="icon" href="data:," />
-    <title>app</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#121014" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23121014'/%3E%3Ccircle cx='10' cy='16' r='4' fill='%231f4fbf'/%3E%3Ccircle cx='22' cy='16' r='4' fill='%23d6322b'/%3E%3Ccircle cx='16' cy='9' r='3' fill='%23f2b705'/%3E%3Ccircle cx='16' cy='23' r='3' fill='%23f4efe6'/%3E%3C/svg%3E" />
+    <title>Jangdan</title>
+    <style>
+      @font-face { font-family: 'Familjen Grotesk'; src: url('./fonts/familjen-grotesk-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+      @font-face { font-family: 'Familjen Grotesk'; src: url('./fonts/familjen-grotesk-latin-700-normal.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+      @font-face { font-family: 'Kode Mono'; src: url('./fonts/kode-mono-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+      :root { --ink: #121014; --hanji: #f4efe6; --blue: #1f4fbf; --red: #d6322b; --yellow: #f2b705; }
+      html, body { margin: 0; background: var(--ink); color: var(--hanji); }
+      #intro { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 16px; background: radial-gradient(120% 90% at 50% 0%, #221d27 0%, var(--ink) 60%); font-family: 'Familjen Grotesk', system-ui, sans-serif; }
+      #intro[hidden] { display: none; }
+      .card { width: min(560px, 100%); }
+      .eyebrow { font-family: 'Kode Mono', ui-monospace, monospace; font-size: 13px; letter-spacing: .14em; color: var(--yellow); text-transform: uppercase; margin: 0 0 10px; }
+      h1 { font-size: clamp(44px, 12vw, 76px); line-height: .95; margin: 0 0 14px; letter-spacing: -.02em; }
+      .staves { display: grid; gap: 6px; margin: 18px 0 22px; }
+      .stave { display: grid; grid-template-columns: 92px 1fr; align-items: center; gap: 10px; font-family: 'Kode Mono', monospace; font-size: 12px; color: #bdb5aa; }
+      .stave i { display: block; height: 10px; border-top: 1px solid #3a3540; border-bottom: 1px solid #3a3540; position: relative; }
+      .stave i::after { content: ''; position: absolute; left: 0; top: 2px; height: 4px; border-radius: 2px; width: var(--w); background: var(--c); }
+      p { font-size: 17px; line-height: 1.5; color: #d8d1c6; margin: 0 0 18px; }
+      button { font: 700 18px 'Familjen Grotesk', system-ui, sans-serif; color: var(--ink); background: var(--hanji); border: 0; border-radius: 999px; padding: 14px 26px; min-height: 48px; cursor: pointer; }
+      button:disabled { opacity: .45; cursor: not-allowed; }
+      button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+      #intro-note { font-size: 14px; color: #a69e93; margin-top: 16px; }
+      #intro-note.error { color: #ffb4ab; }
+      @media (max-width: 420px) { .stave { grid-template-columns: 72px 1fr; } }
+    </style>
   </head>
-  <body style="margin: 0">
+  <body>
     <div id="scene-container"></div>
+    <div id="intro">
+      <div class="card">
+        <p class="eyebrow">Jangdan · a light orchestra · ♩ = 88</p>
+        <h1>Your room is the hall.</h1>
+        <div class="staves" aria-hidden="true">
+          <div class="stave">Strings<i style="--w:72%;--c:var(--blue)"></i></div>
+          <div class="stave">Winds<i style="--w:54%;--c:var(--yellow)"></i></div>
+          <div class="stave">Brass<i style="--w:38%;--c:var(--red)"></i></div>
+          <div class="stave">Janggu<i style="--w:86%;--c:var(--hanji)"></i></div>
+        </div>
+        <p>Sit down, raise your right hand and drop it on the beat. Four sections of light play from your real walls and table. Your left palm sets the dynamics; a fist cuts them off.</p>
+        <button id="enter" disabled>Enter the hall</button>
+        <p id="intro-note">Meta Quest 3 / 3S, hands only. Checking for mixed reality...</p>
+      </div>
+    </div>
     <script type="module" src="/src/index.ts"></script>
   </body>
 </html>
