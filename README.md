@@ -72,7 +72,8 @@ packages/core     pure TypeScript, no DOM: beat tracker, dynamics, gestures, loo
                   score. Vitest.
 packages/app      the IWSDK app: stage (planes -> surfaces -> washes + banners + audio), conductor (hands ->
                   performance -> synth), cues (ray/gaze + pinch), light, head-locked HUD, wrist menu, e2e harness.
-packages/landing  one-page site laid out as an orchestral full score (static HTML/CSS).
+packages/landing  overture laid out as an orchestral full score (static HTML/CSS). The method,
+                  the pieces, and the emulator numbers live on evidence.html.
 ```
 
 ## Run it
