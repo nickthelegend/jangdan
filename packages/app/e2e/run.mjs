@@ -44,14 +44,15 @@ async function enterXR() {
   step('state', { read: ['rescan'] });
   await sleep(800);
   const st = cli(['xr', 'status']);
-  const d = st?.data ?? st;
+  const d = st?.data?.result ?? st?.data ?? st;
   C.ok('XR session active', d.sessionActive === true, { device: d.deviceName, features: d.enabledFeatures });
   return d;
 }
 
 function errors() {
   const logs = cli(['browser', 'logs'], { count: 400 });
-  const list = (logs?.data?.logs ?? logs?.logs ?? []).filter((l) => (l.level ?? l.type) === 'error');
+  const rawList = logs?.data?.result ?? logs?.data?.logs ?? logs?.logs ?? [];
+  const list = (Array.isArray(rawList) ? rawList : []).filter((l) => (l.level ?? l.type) === 'error');
   return list.map((l) => String(l.text ?? l.message).slice(0, 300));
 }
 
@@ -88,7 +89,7 @@ async function quest() {
   const d = step('conduct', { bpm: 96, seconds: 2.5, raise: 0, left: -0.03 }, 30000);
   C.ok('left palm high reads at least f', d.status.level >= 4 / 6 && ['f', 'ff'].includes(d.status.dynMark), { level: d.status.level, mark: d.status.dynMark });
   const shot = join(RESULTS, `${tag}-playing.png`);
-  cli(['browser', 'screenshot'], { outputFile: shot });
+  cli(['browser', 'screenshot', '--output-file', shot]);
 
   // cue: point the left hand's ray at the strings' surface and pinch
   const a = st.sections.strings.anchor;
@@ -174,7 +175,7 @@ async function glasses() {
   const arrows = Object.keys(h).filter((k) => k.startsWith('arrow-'));
   C.ok('edge arrows drawn for sections outside the FoV, inside the FoV themselves', arrows.length > 0 && arrows.every((k) => h[k].inView), arrows);
   const shot = join(RESULTS, `${tag}-fov.png`);
-  cli(['browser', 'screenshot'], { outputFile: shot });
+  cli(['browser', 'screenshot', '--output-file', shot]);
   const errs = errors();
   C.ok('zero console errors', errs.length === 0, errs.slice(0, 5));
   save(tag, { ...C.summary(), hud: h, screenshot: shot });
