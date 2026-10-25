@@ -1,3 +1,39 @@
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/familjen-grotesk-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/familjen-grotesk-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('fonts/familjen-grotesk-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Kode Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/kode-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Kode Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/kode-mono-latin-600-normal.woff2') format('woff2');
+}
+
 :root {
   --ink: #121014;
   --hanji: #f4efe6;
@@ -17,6 +53,7 @@ body {
   background: var(--hanji);
   color: var(--ink);
   font: 400 20px/1.45 var(--sans);
+  overflow-wrap: break-word;
 }
 ::selection { background: var(--yellow); color: var(--ink); }
 .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
