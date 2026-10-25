@@ -22,8 +22,13 @@ if (cfg.dev.emulator.device !== 'metaQuest3' || cfg.dev.emulator.environment !==
 }
 cli(['browser', 'reload']);
 await sleep(2500);
-cli(['xr', 'set-input-mode'], { mode: 'hand' });
 cli(['xr', 'enter']);
+for (let i = 0; i < 20; i++) {
+  const s = cli(['xr', 'status']);
+  if (s?.data?.sessionActive ?? s?.sessionActive) break;
+  await sleep(500);
+}
+cli(['xr', 'set-input-mode'], { mode: 'hand' });
 // seated: head at 1.2 m
 cli(['xr', 'set-transform'], { device: 'headset', position: { x: 0, y: 1.2, z: 0 } });
 step('state', { read: ['rescan'] });
