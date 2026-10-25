@@ -1,0 +1,130 @@
+{
+  "name": "glasses-sunlit_living_room",
+  "passed": 9,
+  "failed": 0,
+  "items": [
+    {
+      "label": "XR session active",
+      "pass": true,
+      "value": {
+        "device": "Meta VR Glasses",
+        "features": [
+          "local-floor",
+          "bounded-floor",
+          "hand-tracking",
+          "plane-detection",
+          "mesh-detection",
+          "gaze-tracking",
+          "eye-tracking",
+          "viewer",
+          "local"
+        ]
+      }
+    },
+    {
+      "label": "Meta VR Glasses profile with gaze granted",
+      "pass": true,
+      "value": "Meta VR Glasses"
+    },
+    {
+      "label": "stage built from the room",
+      "pass": true,
+      "value": {
+        "real": 4,
+        "surfaces": 27
+      }
+    },
+    {
+      "label": "app switched to the narrow-FoV layout",
+      "pass": true
+    },
+    {
+      "label": "gaze + pinch cues brass",
+      "pass": true,
+      "value": [
+        "brass",
+        "strings"
+      ]
+    },
+    {
+      "label": "gaze + pinch cues strings",
+      "pass": true,
+      "value": [
+        "brass",
+        "strings"
+      ]
+    },
+    {
+      "label": "caption, score ring and section strip are inside the Glasses FoV (corners)",
+      "pass": true,
+      "value": {
+        "caption": {
+          "yaw": -16.7,
+          "pitch": -18,
+          "inView": true
+        },
+        "ring": {
+          "yaw": -3.7,
+          "pitch": -2,
+          "inView": true
+        },
+        "strip": {
+          "yaw": -14,
+          "pitch": -20.5,
+          "inView": true
+        },
+        "arrow-strings": {
+          "yaw": -30.5,
+          "pitch": 18.5,
+          "inView": true
+        },
+        "arrow-winds": {
+          "yaw": 30.5,
+          "pitch": 18.5,
+          "inView": true
+        }
+      }
+    },
+    {
+      "label": "edge arrows drawn for sections outside the FoV, inside the FoV themselves",
+      "pass": true,
+      "value": [
+        "arrow-strings",
+        "arrow-winds"
+      ]
+    },
+    {
+      "label": "zero console errors",
+      "pass": true,
+      "value": []
+    }
+  ],
+  "hud": {
+    "caption": {
+      "yaw": -16.7,
+      "pitch": -18,
+      "inView": true
+    },
+    "ring": {
+      "yaw": -3.7,
+      "pitch": -2,
+      "inView": true
+    },
+    "strip": {
+      "yaw": -14,
+      "pitch": -20.5,
+      "inView": true
+    },
+    "arrow-strings": {
+      "yaw": -30.5,
+      "pitch": 18.5,
+      "inView": true
+    },
+    "arrow-winds": {
+      "yaw": 30.5,
+      "pitch": 18.5,
+      "inView": true
+    }
+  },
+  "screenshot": "/Volumes/Extreme SSD/Projects/grokbot/projects/.loom-worktrees/jangdan-73d688a89aa8/omvnvxltu/t-e2e2/packages/app/e2e/results/glasses-sunlit_living_room-fov.png"
+}
