@@ -51,7 +51,7 @@ const script = {
     [14.5, 0],
   ],
 };
-const r = step('record', { outDir: out, script, width: 1280, height: 720 }, 120000);
+const r = step('record', { outDir: out, script, width: 1280, height: 720 }, 90000);
 writeFileSync(join(VIDEOS, `${name}.json`), JSON.stringify({ room, script, ...r, recordedAt: new Date().toISOString() }, null, 2));
 
 // frames -> constant 30 fps video using each frame's real timestamp, then mux the real audio

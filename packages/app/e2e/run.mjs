@@ -131,7 +131,7 @@ async function complete() {
   step('state', { read: ['resetMetrics'] });
   // Hanji Light: 112 beats; at 96 BPM that is 70 s, plus the count-in and the fermata
   const seconds = 0.6 + (4 + 112) * 0.625 + 2.5;
-  const r = step('conduct', { bpm: 96, seconds, raise: 0.6, left: [-0.5, -0.05], fistAfter: 0.8 }, 200000);
+  const r = step('conduct', { bpm: 96, seconds, raise: 0.6, left: [-0.5, -0.05], fistAfter: 0.8 }, 95000);
   const fermata = r.log.find((l) => l.type === 'fermata');
   const cut = r.log.find((l) => l.type === 'cutoff');
   const score = r.log.find((l) => l.type === 'score');

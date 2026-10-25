@@ -38,7 +38,8 @@ export function cliData(args, input, timeout) {
 /** Run e2e/steps/<name>.mjs in the managed page; params go through a JSON file the step reads. */
 export function step(name, params = {}, timeout = 60000) {
   writeFileSync(PARAMS, JSON.stringify(params));
-  const r = cli(['browser', 'run', `e2e/steps/${name}.mjs`, '--timeout', String(timeout)], undefined, timeout + 30000);
+  const leaseTimeout = Math.min(timeout, 105000);
+  const r = cli(['browser', 'run', `e2e/steps/${name}.mjs`, '--timeout', String(leaseTimeout)], undefined, leaseTimeout + 30000);
   if (r && typeof r === 'object' && r.ok === false) throw new Error(`step ${name}: ${JSON.stringify(r.error).slice(0, 800)}`);
   return r?.data?.result ?? r?.result ?? r;
 }
