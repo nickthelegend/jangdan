@@ -1,0 +1,47 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "all-caps-body",
+        "value": "*",
+        "files": [
+          "packages/app/index.html"
+        ],
+        "createdAt": "2026-10-25T10:04:11.653Z",
+        "reason": "Agent: one tempo eyebrow (36 chars), the score's marking, not a paragraph of body copy"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "packages/app/index.html",
+          "packages/landing/evidence.html"
+        ],
+        "createdAt": "2026-10-25T10:04:11.691Z",
+        "reason": "Agent: the scan missed the clamp display sizes (44–96px); the headline is more than twice the body"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "packages/landing/evidence.html",
+          "packages/landing/index.html"
+        ],
+        "createdAt": "2026-10-25T10:04:11.726Z",
+        "reason": "Agent: #f4efe6 is hanji, the specified obangsaek paper, not a default cream"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "packages/landing/evidence.html",
+          "packages/landing/index.html"
+        ],
+        "createdAt": "2026-10-25T10:04:11.777Z",
+        "reason": "Agent: the repeating gradient is the five-line orchestral staff, the required score archetype"
+      }
+    ]
+  }
+}
