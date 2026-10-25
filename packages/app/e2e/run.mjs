@@ -23,7 +23,7 @@ async function ensureConfig() {
   }
   for (let i = 0; i < 60; i++) {
     const s = cli(['dev', 'status']);
-    if (s?.data?.browserCommandReady ?? s?.browserCommandReady) return;
+    if (s?.data?.state?.browserCommandReady ?? s?.data?.browserCommandReady ?? s?.browserCommandReady) return;
     await sleep(1000);
   }
   throw new Error('dev server never became ready');
