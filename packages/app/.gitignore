@@ -46,4 +46,4 @@ pids/
 
 # e2e scratch (recordings are muxed into grokbot/videos/jangdan)
 e2e/.params.json
-e2e/results/rec/
+e2e/results/
