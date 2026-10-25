@@ -135,9 +135,11 @@ async function complete() {
   const fermata = r.log.find((l) => l.type === 'fermata');
   const cut = r.log.find((l) => l.type === 'cutoff');
   const score = r.log.find((l) => l.type === 'score');
+  const persisted = step('state', { waitFor: "J.log('saved').length", timeout: 4000, read: ['log'] });
+  const saved = (persisted.log ?? []).filter((l) => l.type === 'saved').at(-1);
   C.ok('reached the final fermata hands-only', !!fermata);
   C.ok('the fist cut the fermata off and the piece counts as completed', cut && !cut.auto && cut.completed, cut);
-  C.ok('togetherness score computed and saved', !!score, score);
+  C.ok('togetherness score computed and saved', !!score && score.ictus >= 4 && score.saved === true && !!saved, { score, saved });
   const m = step('state', { read: ['metrics'] }).metrics;
   C.ok('Jangdan main-thread CPU p95 <= 4 ms over the whole piece', m.cpuP95 <= 4, m);
   C.ok('<= 60 draw calls per frame over the whole piece', m.drawCallsMax <= 60, m.drawCallsMax);

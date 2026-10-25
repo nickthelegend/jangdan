@@ -322,17 +322,34 @@ export class ConductorSystem extends createSystem({}) {
     status.count = 0;
     status.caption = 'your room is the hall';
     this.timeline = [];
-    rt.push('cutoff', { time: +r.releaseAt.toFixed(3), auto, beat: +perf.beatAt(r.releaseAt).toFixed(2), completed: perf.take.completed });
+    rt.push('cutoff', {
+      time: +r.releaseAt.toFixed(3),
+      auto,
+      beat: +perf.beatAt(r.releaseAt).toFixed(2),
+      completed: perf.take.completed,
+      ictus: perf.take.ictus.length,
+    });
     const mode = rt.settings.mode;
-    if (mode === 'conduct' && perf.take.ictus.length >= 4) {
+    if (mode === 'conduct' && perf.take.ictus.length >= 1) {
       const score = scoreTake(perf.take);
-      status.results = { score, best: null, isBest: false, completed: perf.take.completed };
-      void store.saveTake(perf.take, score).then(({ previous, isBest }) => {
-        if (status.results) {
-          status.results.best = previous?.total ?? null;
-          status.results.isBest = isBest;
+      const staged = store.stageTake(perf.take, score);
+      status.results = { score, best: staged.previous?.total ?? null, isBest: staged.isBest, completed: perf.take.completed };
+      rt.push('score', {
+        total: score.total,
+        steadiness: +score.steadiness.toFixed(2),
+        cue: +score.cueTiming.toFixed(2),
+        range: +score.dynamicRange.toFixed(2),
+        isBest: staged.isBest,
+        ictus: perf.take.ictus.length,
+        saved: true,
+      });
+      const shown = score;
+      void store.persistTake(perf.take, score).then((saved) => {
+        if (saved.where === 'idb' && status.results?.score === shown) {
+          status.results.best = saved.previous?.total ?? null;
+          status.results.isBest = saved.isBest;
         }
-        rt.push('score', { total: score.total, steadiness: +score.steadiness.toFixed(2), cue: +score.cueTiming.toFixed(2), range: +score.dynamicRange.toFixed(2), isBest });
+        rt.push('saved', { total: shown.total, isBest: saved.isBest, where: saved.where, ictus: perf.take.ictus.length });
       });
     } else {
       status.results = { score: null, best: null, isBest: false, completed: perf.take.completed };
