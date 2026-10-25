@@ -1,6 +1,30 @@
 # Jangdan testing
 
-Recorded 25 Oct 2026 on this machine (IWER, headless Chrome, IWSDK 1.1.0-rc.2). No headset.
+Latest verification attempt: **25 Oct 2026, 14:01–14:03 UTC**, in the Loom `t-e2e` worktree. No headset.
+
+## Fresh verification attempt
+
+- `npm install --no-audit --no-fund` in `packages/app` installed 258 packages from the existing lockfile; no dependency or lockfile changes.
+- `npm run typecheck` in `packages/app`: **passed**.
+- `npm run build` in `packages/app`: **passed**, 2,241 modules transformed. Vite warned about font URLs, dependency annotations and bundle size; the three font URLs mentioned in the warnings have corresponding files in `dist/fonts/`.
+- Acquired the shared heavy slot before startup and released it after cleanup. No deploy, recording or landing changes.
+
+**Emulator blocked by the execution environment before any checks ran.** Both attempts at `npx iwsdk dev up --ai-mode agent --allow-browser-automation` exited with `dev_up_exit` / `RuntimeOwnerError: Cannot establish this process birth identity, so runtime ownership cannot be acquired safely`. The sandbox also rejected `ps` with `operation not permitted`. `iwsdk dev status` reported `running: false`, `browserConnected: false`, and `browserCommandReady: false`; no managed browser became available. The four mode commands were therefore not run against an unavailable runtime.
+
+| Requested fresh run | Pass count | CPU p95 | Draws | Triangles | Console errors |
+|---|---|---|---|---|---|
+| Quest 3 · sunlit_living_room | blocked; no checks run | not measured | not measured | not measured | not observed |
+| Quest 3 · home_office | blocked; no checks run | not measured | not measured | not measured | not observed |
+| Hands-only full piece · sunlit_living_room | blocked; no checks run | not measured | not measured | not measured | not observed |
+| Meta VR Glasses · sunlit_living_room | blocked; no checks run | not measured | not measured | not measured | not observed |
+
+**Landing checks also blocked.** A Python static server started from `packages/landing` exited when binding `127.0.0.1:8090` with `PermissionError: [Errno 1] Operation not permitted`. Neither the 1280 px nor the 375 px browser pass ran; screenshots, horizontal overflow, captions and console errors remain unverified in this attempt.
+
+Cleanup: `npx iwsdk dev down` returned `stopped: false` (no registered runtime). Both failed IWSDK launches exited themselves, as did the Python server (PID 44279). No PIDs were manually killed. The heavy-slot release command succeeded. `iwsdk.config.json` remains `metaQuest3` / `sunlit_living_room`, with no diff. No product defect was reproduced, and no checks were weakened.
+
+## Prior recorded evidence — not revalidated by this attempt
+
+The counts and measurements below were already recorded for 25 Oct 2026 (IWER, headless Chrome, IWSDK 1.1.0-rc.2). They are historical claims, **not fresh passing results** from this worktree run.
 
 ## Unit (packages/core)
 
