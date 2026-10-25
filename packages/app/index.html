@@ -27,7 +27,11 @@
       button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
       #intro-note { font-size: 14px; color: #a69e93; margin-top: 16px; }
       #intro-note.error { color: #ffb4ab; }
-      @media (max-width: 420px) { .stave { grid-template-columns: 72px 1fr; } }
+      @media (max-width: 420px) {
+        button { width: 100%; }
+        .stave { grid-template-columns: 72px 1fr; }
+        .eyebrow { font-size: 12px; letter-spacing: 0.05em; }
+      }
     </style>
   </head>
   <body>
@@ -42,9 +46,9 @@
           <div class="stave">Brass<i style="--w:38%;--c:var(--red)"></i></div>
           <div class="stave">Janggu<i style="--w:86%;--c:var(--hanji)"></i></div>
         </div>
-        <p>Sit down, raise your right hand and drop it on the beat. Four sections of light play from your real walls and table. Your left palm sets the dynamics; a fist cuts them off.</p>
+        <p>Sit down. Raise your right hand and drop it. Your walls play.</p>
         <button id="enter" disabled>Enter the hall</button>
-        <p id="intro-note">Meta Quest 3 / 3S, hands only. Checking for mixed reality...</p>
+        <p id="intro-note">Checking for mixed reality…</p>
       </div>
     </div>
     <script type="module" src="/src/index.ts"></script>

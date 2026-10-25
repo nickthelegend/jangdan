@@ -73,6 +73,7 @@ async function main(): Promise<void> {
     return;
   }
   enter.disabled = false;
+  note.textContent = 'Hands only. Sit down, then enter.';
   enter.addEventListener('click', () => {
     void rt.engine?.resume();
     world.launchXR();
