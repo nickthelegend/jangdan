@@ -50,7 +50,7 @@ async function enterXR() {
 }
 
 function errors() {
-  const logs = cli(['browser', 'logs'], { count: 400 });
+  const logs = cli(['browser', 'logs'], { count: 200 });
   const rawList = logs?.data?.result ?? logs?.data?.logs ?? logs?.logs ?? [];
   const list = (Array.isArray(rawList) ? rawList : []).filter((l) => (l.level ?? l.type) === 'error');
   return list.map((l) => String(l.text ?? l.message).slice(0, 300));
