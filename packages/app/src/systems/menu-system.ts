@@ -106,6 +106,6 @@ export class MenuSystem extends createSystem({ menu: { required: [WristMenu] } }
     this.els.get('btn-flash')?.setProperties({ backgroundColor: set.reducedFlash ? ACTIVE : IDLE });
     this.els.get('btn-onehand')?.setProperties({ backgroundColor: set.oneHand ? ACTIVE : IDLE });
     const title = set.pieceIndex < PIECES.length ? PIECES[set.pieceIndex].title : generatePiece(dailySeed(new Date())).title;
-    this.els.get('menu-status')?.setProperties({ text: `${title} · ${set.mode}${set.oneHand ? ' · one hand' : ''}` });
+    this.els.get('menu-status')?.setProperties({ text: `${title} / ${set.mode}${set.oneHand ? ' / one hand' : ''}` });
   }
 }

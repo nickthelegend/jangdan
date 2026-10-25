@@ -28,11 +28,19 @@ export function cli(args, input, timeout = 120000) {
   }
 }
 
+/** The `data` payload of a CLI call. */
+export function cliData(args, input, timeout) {
+  const r = cli(args, input, timeout);
+  if (r && r.ok === false) throw new Error(`iwsdk ${args.join(' ')}: ${JSON.stringify(r.error).slice(0, 600)}`);
+  return r?.data ?? r;
+}
+
 /** Run e2e/steps/<name>.mjs in the managed page; params go through a JSON file the step reads. */
 export function step(name, params = {}, timeout = 60000) {
   writeFileSync(PARAMS, JSON.stringify(params));
   const r = cli(['browser', 'run', `e2e/steps/${name}.mjs`, '--timeout', String(timeout)], undefined, timeout + 30000);
-  return r && typeof r === 'object' && 'result' in r ? r.result : r;
+  if (r && typeof r === 'object' && r.ok === false) throw new Error(`step ${name}: ${JSON.stringify(r.error).slice(0, 800)}`);
+  return r?.data?.result ?? r?.result ?? r;
 }
 
 export function readParams() {

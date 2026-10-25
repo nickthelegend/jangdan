@@ -60,8 +60,8 @@
   }
 </style>
 <div class="root" id="menu-root">
-  <span class="eyebrow" id="menu-eyebrow">JANGDAN · MENU</span>
-  <span class="status" id="menu-status">Hanji Light · conduct</span>
+  <span class="eyebrow" id="menu-eyebrow">JANGDAN / MENU</span>
+  <span class="status" id="menu-status">Hanji Light / conduct</span>
   <div class="rule"></div>
   <span class="eyebrow">PIECE</span>
   <div class="row">
