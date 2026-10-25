@@ -1,34 +1,17 @@
 # Jangdan testing
 
-Latest verification attempt: **25 Oct 2026, 14:01–14:03 UTC**, in the Loom `t-e2e` worktree. No headset.
+Latest verification: **25 Oct 2026, 14:11–14:18 UTC**, in the Loom `t-e2e2` worktree. No headset. One heavy slot, acquired before the IWSDK browser and released after the landing Chrome exited.
 
-## Fresh verification attempt
+## Fresh verification
 
-- `npm install --no-audit --no-fund` in `packages/app` installed 258 packages from the existing lockfile; no dependency or lockfile changes.
-- `npm run typecheck` in `packages/app`: **passed**.
-- `npm run build` in `packages/app`: **passed**, 2,241 modules transformed. Vite warned about font URLs, dependency annotations and bundle size; the three font URLs mentioned in the warnings have corresponding files in `dist/fonts/`.
-- Acquired the shared heavy slot before startup and released it after cleanup. No deploy, recording or landing changes.
-
-**Emulator blocked by the execution environment before any checks ran.** Both attempts at `npx iwsdk dev up --ai-mode agent --allow-browser-automation` exited with `dev_up_exit` / `RuntimeOwnerError: Cannot establish this process birth identity, so runtime ownership cannot be acquired safely`. The sandbox also rejected `ps` with `operation not permitted`. `iwsdk dev status` reported `running: false`, `browserConnected: false`, and `browserCommandReady: false`; no managed browser became available. The four mode commands were therefore not run against an unavailable runtime.
-
-| Requested fresh run | Pass count | CPU p95 | Draws | Triangles | Console errors |
-|---|---|---|---|---|---|
-| Quest 3 · sunlit_living_room | blocked; no checks run | not measured | not measured | not measured | not observed |
-| Quest 3 · home_office | blocked; no checks run | not measured | not measured | not measured | not observed |
-| Hands-only full piece · sunlit_living_room | blocked; no checks run | not measured | not measured | not measured | not observed |
-| Meta VR Glasses · sunlit_living_room | blocked; no checks run | not measured | not measured | not measured | not observed |
-
-**Landing checks also blocked.** A Python static server started from `packages/landing` exited when binding `127.0.0.1:8090` with `PermissionError: [Errno 1] Operation not permitted`. Neither the 1280 px nor the 375 px browser pass ran; screenshots, horizontal overflow, captions and console errors remain unverified in this attempt.
-
-Cleanup: `npx iwsdk dev down` returned `stopped: false` (no registered runtime). Both failed IWSDK launches exited themselves, as did the Python server (PID 44279). No PIDs were manually killed. The heavy-slot release command succeeded. `iwsdk.config.json` remains `metaQuest3` / `sunlit_living_room`, with no diff. No product defect was reproduced, and no checks were weakened.
-
-## Prior recorded evidence — not revalidated by this attempt
-
-The counts and measurements below were already recorded for 25 Oct 2026 (IWER, headless Chrome, IWSDK 1.1.0-rc.2). They are historical claims, **not fresh passing results** from this worktree run.
+- `npm ci --no-audit --no-fund` in `packages/app` installed 258 packages from the existing lockfile. No dependency or lockfile changes.
+- Unit, fresh: Vitest, 8 files, **60 passed**. `npx tsc --noEmit` in `packages/core` exit 0.
+- Emulator: `npx iwsdk dev up --ai-mode agent --allow-browser-automation`, then `node e2e/run.mjs` for the four modes below, then `npx iwsdk dev down` (`stopped: true`). `iwsdk.config.json` is restored to `metaQuest3` / `sunlit_living_room`.
+- Landing: Python static server on `127.0.0.1`, headless Chrome. `index.html` and `evidence.html` at 1280×800 and 375×812. `scrollWidth` equals `clientWidth` on both (1265 at 1280×800, where the other 15 px is the scrollbar; 375 at 375×812). Self-hosted woff2 requests returned 200. 0 console errors. No landing change.
 
 ## Unit (packages/core)
 
-`npm test` — Vitest, 8 files, **60 passed**, 0 failed.
+`npm test` — Vitest, 8 files, **60 passed**, 0 failed. `npx tsc --noEmit` exit 0.
 
 | File | What it locks |
 |---|---|
@@ -41,24 +24,40 @@ The counts and measurements below were already recorded for 25 Oct 2026 (IWER, h
 | piece.test.ts | Three authored pieces, each 60–90 s, all four sections, cue entries |
 | performance.test.ts | Count-in, fist within one beat, a full hands-only piece, listen mode, ghost replay, togetherness score |
 
-`npx tsc --noEmit` in `packages/core` and `packages/app` passed.
-
 ## Emulator (packages/app)
 
-One agent-mode dev server, one managed browser. `node e2e/run.mjs <mode> <room>`.
+One agent-mode dev server, one managed browser. `node e2e/run.mjs <mode> <room>`. IWSDK 1.1.0-rc.2, IWER, headless Chrome.
 
-| Run | Result | CPU p95 | Draws | Triangles | Notes |
+| Run | Result | CPU p95 | Draws | Triangles | Console errors |
 |---|---|---|---|---|---|
-| Quest 3 · sunlit_living_room | **23/23** | 0.3 ms | 48 | 18,736 | Tempo 96.06 after 8+ beats. Left palm reads ff. Hand ray + pinch cues strings. Fist silences every section and the caption is "your room is the hall". Offline RMS 0.124 while playing, 0 after the cut-off. 0 console errors |
-| Quest 3 · home_office | **23/23** | 0.3 ms | 48 | 18,736 | Same loop. Room volume 42.5 m³, RT60 0.66 s (the living room was 90 m³, RT60 0.80 s) |
-| Hands-only full piece · sunlit_living_room | **8/8** | 0.3 ms | 48 | 18,736 | Fermata reached, fist completed the piece. 112 ictus. Togetherness 64 (steadiness 0.87), saved to IndexedDB |
-| Meta VR Glasses · sunlit_living_room | **9/9** | not sampled | not sampled | not sampled | Gaze + pinch cues brass and strings. Caption, score ring and section strip stay inside the FoV. Edge arrows for strings and winds. 0 console errors |
+| Quest 3 · sunlit_living_room | **23/23** | 0.3 ms | 48 | 18,736 | 0 |
+| Quest 3 · home_office | **23/23** | 0.3 ms | 48 | 18,736 | 0 |
+| Hands-only full piece · sunlit_living_room | **8/8** | 0.3 ms | 48 | 18,736 | 0 |
+| Meta VR Glasses · sunlit_living_room | **9/9** | not sampled | not sampled | not sampled | 0 |
 
-Gates from the spec: main-thread CPU p95 ≤ 4 ms, ≤ 60 draw calls, ≤ 80k triangles, 0 console errors. All three measured runs are inside them. Frame interval p95 on the Quest runs was 17.6 ms (the emulator is not a 72 fps headset).
+Gates from the spec: main-thread CPU p95 ≤ 4 ms, ≤ 60 draw calls, ≤ 80k triangles, 0 console errors. The three measured runs are inside them.
+
+- Quest 3 · sunlit living room: tempo 95.85 after 8+ beats. Left palm reads ff. Hand ray + pinch cues strings. Fist silences every section and the caption is "your room is the hall". Offline RMS 0.124 while playing, 0 after the cut-off. Room volume 90 m³, RT60 0.80 s. Frame interval p95 18.6 ms.
+- Quest 3 · home office: same loop. Room volume 42.5 m³, RT60 0.66 s. Frame interval p95 18.4 ms.
+- Hands-only full piece: fermata reached, fist completed the piece. 112 ictus. Togetherness 61 (steadiness 0.81), saved to IndexedDB. Frame interval p95 18.5 ms.
+- Meta VR Glasses: gaze + pinch cues brass and strings. Caption, score ring and section strip stay inside the FoV. Edge arrows for strings and winds.
+
+The emulator is not a 72 fps headset.
+
+## Landing
+
+Served `packages/landing` with `python3 -m http.server` bound to `127.0.0.1`, then opened in headless Chrome.
+
+| Viewport | Page | scrollWidth | clientWidth | Font requests | Console errors |
+|---|---|---|---|---|---|
+| 1280×800 | index.html, evidence.html | 1265 | 1265 | 200, no 404 | 0 |
+| 375×812 | index.html, evidence.html | 375 | 375 | 200, no 404 | 0 |
+
+Familjen Grotesk (400, 700) and Kode Mono (400, 600) loaded from `fonts/`. Weight 600 of Familjen Grotesk is not used on these pages, so it was not requested. No Google Fonts request.
 
 ## Clip
 
-`node e2e/record.mjs sunlit_living_room jangdan-whoa`
+Not re-recorded this pass (`e2e/record.mjs` was not run). The existing clip remains:
 
 - `grokbot/videos/jangdan/jangdan-whoa.mp4` — 24.0 s, 1441 frames, program audio muxed, no edits
 - CPU p95 over the clip 0.2 ms, 48 draw calls, 18,736 triangles
