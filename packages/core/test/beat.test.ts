@@ -45,6 +45,15 @@ describe('beat.ts: tempo from wrist ictus', () => {
     expect(Math.abs(tracker.bpm! - 96)).toBeLessThanOrEqual(3);
   });
 
+  it('recovers the beat after the hand steps up and stays there', () => {
+    const traj = wristTrajectory({ bpm: 96, seconds: 8, seed: 4 });
+    const shifted = traj.map((s) => (s.t > 2 ? { t: s.t, y: s.y + 0.35 } : s));
+    const { tracker, ictus } = runTracker(shifted);
+    const late = ictus.filter((i) => i.time > 3.5);
+    expect(late.length).toBeGreaterThan(4);
+    expect(Math.abs(tracker.bpm! - 96)).toBeLessThanOrEqual(4);
+  });
+
   it('drops tracking glitches (a 40 cm jump for one frame) instead of firing a beat', () => {
     const traj = wristTrajectory({ bpm: 96, seconds: 8, seed: 11 });
     const glitchy = traj.map((s, i) => (i % 97 === 50 ? { t: s.t, y: s.y - 0.4 } : s));

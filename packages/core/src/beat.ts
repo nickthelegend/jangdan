@@ -70,6 +70,8 @@ export class BeatTracker {
   private lastIctus: number | null = null;
   private intervals: number[] = [];
   private pending: number[] = [];
+  /** Consecutive samples rejected as jumps. A one-frame spike stays at 1; a hand that moved stays high. */
+  private glitchRun = 0;
   glitches = 0;
 
   constructor(opts: Partial<BeatTrackerOptions> = {}) {
@@ -84,6 +86,7 @@ export class BeatTracker {
     this.lastIctus = null;
     this.intervals = [];
     this.pending = [];
+    this.glitchRun = 0;
   }
 
   /** Current tempo estimate, or null before two ictuses. */
@@ -132,12 +135,25 @@ export class BeatTracker {
       this.yf = y;
       this.vf = 0;
       this.armed = false;
+      this.glitchRun = 0;
       return null;
     }
     if (Math.abs(y - this.yf) > o.maxJump) {
+      // Drop the sample. A one-frame spike must not move the filter (the next sample is back).
+      // A hand that stays at the new height is a real move: resync, or every later sample is
+      // also a "glitch" and the beat tracker never fires again.
       this.glitches++;
+      this.glitchRun++;
+      if (this.glitchRun >= 3) {
+        this.lastT = t;
+        this.yf = y;
+        this.vf = 0;
+        this.armed = false;
+        this.glitchRun = 0;
+      }
       return null;
     }
+    this.glitchRun = 0;
     this.lastT = t;
     const yPrev = this.yf;
     this.yf += (1 - Math.exp(-dt / o.posTau)) * (y - this.yf);
