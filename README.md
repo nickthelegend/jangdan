@@ -124,3 +124,7 @@ npx iwsdk dev down
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+## Art
+
+Art generated with ChatGPT (image generation); prompts and art direction in [docs/ART.md](docs/ART.md). The app ships WebP copies in `packages/app/public/art/`.

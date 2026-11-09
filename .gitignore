@@ -5,3 +5,5 @@ dist/
 .env
 .env.*
 .loom/
+art-src/
+art-src-wif/
