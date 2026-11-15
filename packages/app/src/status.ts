@@ -14,6 +14,8 @@ export const status = {
   count: 0,
   countOf: 4,
   bpm: 0,
+  /** The piece's written tempo, for "faster +12" on the stand. */
+  writtenBpm: 0,
   mark: '',
   bar: 0,
   beatsPerBar: 4,

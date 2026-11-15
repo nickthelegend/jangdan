@@ -3,12 +3,14 @@
  * Chrome remote debugging). Nothing here changes how the experience behaves.
  */
 import { createSystem, type World } from '@iwsdk/core';
-import { percentile, SECTIONS } from '@jangdan/core';
+import { capAtOneMetre, capHeight, isPalmUp, J, palmNormal, percentile, SECTIONS } from '@jangdan/core';
+import { Box3, Vector3 } from '@iwsdk/core';
 import { renderExcerpt } from './audio/offline.js';
 import { rt } from './runtime.js';
 import { status } from './status.js';
 import type { ConductorSystem } from './systems/conductor-system.js';
 import type { HudSystem } from './systems/hud-system.js';
+import type { LightSystem } from './systems/light-system.js';
 import type { StageSystem } from './systems/stage-system.js';
 
 /** Per-frame samples: Jangdan's own main-thread time (all its systems), frame interval, draw calls. */
@@ -42,8 +44,7 @@ export function timeSystem(sys: { update(d: number, t: number): void }): void {
 
 let capture: { rec: MediaRecorder; chunks: Blob[]; dest: MediaStreamAudioDestinationNode; startedAt: number } | null = null;
 
-export function installDebug(world: World, c: ConductorSystem, hud: HudSystem, stage: StageSystem): void {
-  void world;
+export function installDebug(world: World, c: ConductorSystem, hud: HudSystem, stage: StageSystem, light: LightSystem): void {
   (window as unknown as { __jangdan: unknown }).__jangdan = {
     status: () => JSON.parse(JSON.stringify(status)),
     settings: () => ({ ...rt.settings }),
@@ -81,6 +82,51 @@ export function installDebug(world: World, c: ConductorSystem, hud: HudSystem, s
       };
     },
     hudAngles: () => JSON.parse(JSON.stringify(hud.angles)),
+    /**
+     * Legibility: the smallest text's cap height scaled to 1 m (the floor is 0.018 m) for each visible HUD
+     * quad, each section label (at its real distance from the head) and the open wrist menu.
+     */
+    legibility: () => {
+      const head = world.player.head.getWorldPosition(new Vector3());
+      const out: Record<string, number> = { ...hud.legibility() };
+      const st = rt.stage;
+      if (st) {
+        for (const s of SECTIONS) {
+          const q = st.sections[s].label;
+          const d = q.mesh.getWorldPosition(new Vector3()).distanceTo(head);
+          out[`label-${s}`] = +capAtOneMetre(capHeight(q.minFont, q.pxW, q.metersW), d).toFixed(4);
+        }
+      }
+      const menu = world.getSceneObject?.('wrist-menu') as unknown as { visible: boolean; scale: Vector3 } & Parameters<Box3['setFromObject']>[0] | undefined;
+      if (menu && menu.visible) {
+        // body text is font-size 1.35 on a 26-unit-wide panel: measure the panel's real width
+        const box = new Box3().setFromObject(menu);
+        const size = box.getSize(new Vector3());
+        const widthM = Math.hypot(size.x, size.z);
+        const capM = (1.35 / 26) * widthM * 0.7;
+        out.menu = +capAtOneMetre(capM, box.getCenter(new Vector3()).distanceTo(head)).toFixed(4);
+        out.menuWidthM = +widthM.toFixed(3);
+      }
+      return out;
+    },
+    /** World position of a hand joint (default the index fingertip), for the e2e/film hand driver. */
+    tip: (side: 'left' | 'right', joint: keyof typeof J = 'indexTip') => {
+      if (!c.hands.tracked[side]) return null;
+      const j = c.hands.joints[side];
+      const k = J[joint] * 3;
+      return [j[k], j[k + 1], j[k + 2]];
+    },
+    palm: (side: 'left' | 'right') => (c.hands.tracked[side] ? { up: isPalmUp(c.hands.joints[side], side), normal: palmNormal(c.hands.joints[side], side) } : null),
+    /** World position of a wrist-menu element (to poke it with the emulated index finger). */
+    menuButton: (id: string) => {
+      const panel = world.getSceneObject?.('wrist-menu') as unknown as { visible: boolean; getElementById(id: string): { getWorldPosition(v: Vector3): Vector3 } | undefined } | undefined;
+      const el = panel?.getElementById(id);
+      if (!panel || !panel.visible || !el) return null;
+      const v = el.getWorldPosition(new Vector3());
+      return [v.x, v.y, v.z];
+    },
+    /** The light show this frame: per-section peak intensity, notes bloomed so far, motes alive. */
+    light: () => ({ peak: Object.fromEntries(SECTIONS.map((s) => [s, +light.peak[s].toFixed(3)])), notesBloomed: light.notesBloomed }),
     glasses: () => rt.glasses,
     /** Sanity render through the real synth into an OfflineAudioContext. */
     renderExcerpt: (piece = 0) => renderExcerpt(piece),

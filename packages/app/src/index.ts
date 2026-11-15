@@ -48,7 +48,7 @@ async function main(): Promise<void> {
   light.setConductor(conductor);
   menu.setConductor(conductor);
   for (const s of [stage, conductor, world.getSystem(CueSystem)!, light, hud, menu]) timeSystem(s);
-  installDebug(world, conductor, hud, stage);
+  installDebug(world, conductor, hud, stage, light);
 
   world.renderer.xr.addEventListener('sessionstart', () => {
     const session = world.renderer.xr.getSession();

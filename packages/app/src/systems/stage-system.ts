@@ -22,6 +22,8 @@ import {
   assignStage,
   type BannerPlacement,
   hashString,
+  LIGHT_COLOR,
+  quadWidthFor,
   type Listener,
   PALETTE,
   reverbParams,
@@ -91,23 +93,33 @@ function paperTexture(section: SectionId, reason: string): CanvasTexture {
   return Object.assign(new CanvasTexture(c), { colorSpace: SRGBColorSpace });
 }
 
+/** Label canvas: 720 px wide; the smallest text on it is LABEL_MIN_FONT px (the legibility check reads this). */
+export const LABEL_PX = { w: 720, h: 176 };
+export const LABEL_MIN_FONT = 44;
+
 function drawLabel(q: TextQuad, view: { section: SectionId; banner: boolean; role: string }, state: string): void {
   q.draw(`${view.section}|${state}|${view.banner}`, (g, w, h) => {
-    const col = SECTION_COLOR[view.section];
-    g.fillStyle = 'rgba(18,16,20,0.78)';
-    roundRect(g, 4, 4, w - 8, h - 8, 26);
+    const col = LIGHT_COLOR[view.section];
+    const where = view.banner ? 'paper banner' : ROLE_TEXT[view.role] ?? view.role;
+    const sub = state ? `${where} · ${state}` : where;
+    g.font = `700 76px ${SANS}`;
+    const tw = g.measureText(SECTION_LABEL[view.section]).width;
+    g.font = `400 ${LABEL_MIN_FONT}px ${MONO}`;
+    const sw = g.measureText(sub).width;
+    const bw = Math.min(w - 8, Math.max(tw + 130, sw + 70));
+    g.fillStyle = state === 'cue!' ? 'rgba(242,183,5,0.92)' : 'rgba(18,16,20,0.72)';
+    roundRect(g, 4, 4, bw, h - 8, 30);
     g.fill();
     g.fillStyle = col;
     g.beginPath();
-    g.arc(52, h / 2, 16, 0, Math.PI * 2);
+    g.arc(56, 62, 22, 0, Math.PI * 2);
     g.fill();
-    g.fillStyle = PALETTE.hanji;
-    g.font = `700 54px ${SANS}`;
-    g.fillText(SECTION_LABEL[view.section], 88, 74);
-    g.font = `400 30px ${MONO}`;
-    g.fillStyle = 'rgba(244,239,230,0.7)';
-    const where = view.banner ? 'paper banner' : ROLE_TEXT[view.role] ?? view.role;
-    g.fillText(state ? `${where} · ${state}` : where, 90, 116);
+    g.fillStyle = state === 'cue!' ? PALETTE.ink : PALETTE.hanji;
+    g.font = `700 76px ${SANS}`;
+    g.fillText(SECTION_LABEL[view.section], 96, 88);
+    g.font = `400 ${LABEL_MIN_FONT}px ${MONO}`;
+    g.fillStyle = state === 'cue!' ? PALETTE.ink : 'rgba(244,239,230,0.86)';
+    g.fillText(sub, 36, 148, w - 60);
   });
 }
 
@@ -248,7 +260,7 @@ export class StageSystem extends createSystem({
       if (p.kind === 'surface') {
         const src = sources.find((s) => s.surface.id === p.surfaceId)!;
         src.matrix.decompose(root.position, root.quaternion, root.scale);
-        wash = new Wash({ color: SECTION_COLOR[sec], polygon: src.polygon.map(([x, z]) => new Vector2(x, z)) }, `wash-${sec}`);
+        wash = new Wash({ color: LIGHT_COLOR[sec], polygon: src.polygon.map(([x, z]) => new Vector2(x, z)) }, `wash-${sec}`);
       } else {
         const bp = p as BannerPlacement;
         const vertical = Math.abs(bp.normal[1]) < 0.7;
@@ -267,19 +279,31 @@ export class StageSystem extends createSystem({
           root.quaternion.premultiply(new Quaternion().setFromAxisAngle(X, -0.6));
         }
         const poly = [new Vector2(-w / 2, -h / 2), new Vector2(w / 2, -h / 2), new Vector2(w / 2, h / 2), new Vector2(-w / 2, h / 2)];
-        wash = new Wash({ color: SECTION_COLOR[sec], polygon: poly, paper: paperTexture(sec, bp.reason) }, `banner-${sec}`);
+        wash = new Wash({ color: LIGHT_COLOR[sec], polygon: poly, paper: paperTexture(sec, bp.reason) }, `banner-${sec}`);
       }
       root.add(wash.mesh);
       root.updateMatrixWorld(true);
       meshes.push(wash.mesh);
 
-      const label = new TextQuad(640, 150, 0.36, `label-${sec}`);
       const anchorWorld = new Vector3(...p.anchor);
       const nrm = new Vector3(...p.normal);
-      // labels sit just off the surface toward the listener, a little above the wash centre
+      // labels sit just off the surface toward the listener: high on a wall (clear of the light show and
+      // the furniture), just above a table or banner
       const toListener = new Vector3(...listener.position).sub(anchorWorld).normalize();
-      label.mesh.position.copy(anchorWorld).addScaledVector(nrm.dot(toListener) >= 0 ? nrm : nrm.clone().negate(), 0.06);
-      label.mesh.position.y += p.kind === 'banner' ? (Math.abs(p.normal[1]) < 0.7 ? 0.56 : 0.3) : 0.18;
+      const labelPos = anchorWorld.clone().addScaledVector(nrm.dot(toListener) >= 0 ? nrm : nrm.clone().negate(), 0.06);
+      const vertical = Math.abs(p.normal[1]) < 0.7;
+      if (p.kind === 'banner') labelPos.y += vertical ? 0.56 : 0.3;
+      else if (vertical) {
+        const src = sources.find((x) => x.surface.id === p.surfaceId);
+        const top = src ? Math.max(...src.polygon.map(([x, z]) => new Vector3(x, 0, z).applyMatrix4(src.matrix).y)) : anchorWorld.y + 0.6;
+        const halfH = top - anchorWorld.y;
+        labelPos.y += Math.min(0.75, Math.max(0.25, halfH * 0.55));
+      } else labelPos.y += 0.22;
+      // sized for its distance: body text at least 18 mm cap height per metre
+      const dist = labelPos.distanceTo(new Vector3(...listener.position));
+      const label = new TextQuad(LABEL_PX.w, LABEL_PX.h, quadWidthFor(dist, LABEL_MIN_FONT, LABEL_PX.w), `label-${sec}`);
+      label.minFont = LABEL_MIN_FONT;
+      label.mesh.position.copy(labelPos);
       this.group.add(label.mesh);
 
       engine?.placeSection(sec, p.anchor);

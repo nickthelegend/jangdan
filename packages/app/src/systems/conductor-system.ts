@@ -74,6 +74,7 @@ export class ConductorSystem extends createSystem({}) {
   private calEnd = 0;
   private lastResume = 0;
   private palmUpSince = -1;
+  private menuClosedAt = -10;
 
   init(): void {
     try {
@@ -172,6 +173,7 @@ export class ConductorSystem extends createSystem({}) {
     status.pieceSub = this.piece.json.subtitle ?? '';
     status.mode = rt.settings.mode;
     status.beatsPerBar = this.piece.json.beatsPerBar;
+    status.writtenBpm = this.piece.json.bpm;
   }
 
   private cue(s: SectionId): void {
@@ -208,6 +210,7 @@ export class ConductorSystem extends createSystem({}) {
     this.perf.start(time, bpm);
     status.phase = 'countIn';
     status.results = null;
+    status.writtenBpm = this.piece.json.bpm;
     rt.push('start', { piece: this.piece.json.id, mode, bpm: +this.perf.bpm.toFixed(1), time: +time.toFixed(3) });
   }
 
@@ -422,6 +425,9 @@ export class ConductorSystem extends createSystem({}) {
       if (this.palmUpSince < 0) this.palmUpSince = now;
     } else this.palmUpSince = -1;
     status.menuOpen = palmUp && now - this.palmUpSince > (playing ? 1.0 : 0.25);
+    // poking the menu moves the right hand up and down: that must not start, or beat, the music
+    if (status.menuOpen || palmUp) this.menuClosedAt = now;
+    const menuBusy = now - this.menuClosedAt < 0.6;
 
     // dynamics: left palm height (one-hand mode: the right palm)
     const dynHand = oneHand ? R : L;
@@ -453,6 +459,10 @@ export class ConductorSystem extends createSystem({}) {
     const fist = (this.hands.tracked.left && this.fistL.update(now, L)) || (this.hands.tracked.right && this.fistR.update(now, R));
     if (fist) rt.push('fist', { t: +now.toFixed(3) });
 
+    if (menuBusy) {
+      ictus = null;
+      this.raisedSince = -1;
+    }
     const ictusTime = ictus ? ictus.time - rt.settings.latency : 0;
     const mode = rt.settings.mode;
 

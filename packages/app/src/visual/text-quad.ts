@@ -7,6 +7,8 @@ export class TextQuad {
   readonly texture: CanvasTexture;
   readonly mesh: Mesh<PlaneGeometry, MeshBasicMaterial>;
   private key = '';
+  /** Smallest font size (px) this quad draws body text at; the legibility check reads it. */
+  minFont = 0;
 
   constructor(
     readonly pxW: number,
