@@ -14,3 +14,4 @@ export * from './togetherness.js';
 export * from './performance.js';
 export * from './synthetic-rooms.js';
 export { PIECES } from './pieces/index.js';
+export * from './lightshow.js';
