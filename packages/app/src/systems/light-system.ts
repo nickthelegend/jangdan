@@ -4,7 +4,23 @@
  * conductor's dynamics set how far the colour floods. The walls go dark at once on the cut-off.
  */
 import { createSystem, Raycaster, Vector3, VisibilityState } from '@iwsdk/core';
-import { palmCenter, SECTIONS, type SectionId, smoothstep } from '@jangdan/core';
+import {
+  barSweep,
+  beatFlash,
+  bloomStrength,
+  floodCoverage,
+  floodGain,
+  J,
+  LIGHT_COLOR,
+  notePosition,
+  palmCenter,
+  SECTIONS,
+  type SectionId,
+  smoothstep,
+  type Stroke,
+} from '@jangdan/core';
+import { Baton } from '../visual/baton.js';
+import { Sparks } from '../visual/sparks.js';
 import type { LightPulse } from '../audio/engine.js';
 import { rt } from '../runtime.js';
 import { status } from '../status.js';
@@ -39,6 +55,21 @@ export class LightSystem extends createSystem({}) {
   private prevPalm = { left: new Vector3(), right: new Vector3() };
   private tmp = new Vector3();
   private conductor: ConductorSystem | null = null;
+  readonly sparks = new Sparks();
+  readonly baton = new Baton();
+  private nrm = new Vector3();
+  private world3 = new Vector3();
+  /** Strongest wash intensity this frame (for the e2e: is the light actually bright?). */
+  readonly peak: Record<SectionId, number> = { strings: 0, winds: 0, brass: 0, percussion: 0 };
+  private onsets = 0;
+  get notesBloomed(): number {
+    return this.onsets;
+  }
+
+  init(): void {
+    this.scene.add(this.sparks.points, this.baton.mesh);
+  }
+
   setConductor(c: ConductorSystem): void {
     this.conductor = c;
   }
@@ -64,21 +95,17 @@ export class LightSystem extends createSystem({}) {
         const v = st.sections[p.section];
         if (!v) continue;
         const w = v.wash;
-        let x = w.center.x;
-        let z = w.center.y;
-        if (p.section === 'percussion') {
-          const h = Math.sin(p.time * 91.7) * 0.5;
-          if (p.stroke === 'T' || p.stroke === 'R') {
-            x += h * w.half.x;
-            z += Math.cos(p.time * 57.3) * 0.4 * w.half.y;
-          } else if (p.stroke === 'K') x -= 0.35 * w.half.x;
-        } else {
-          const u = Math.max(0, Math.min(1, (p.midi - 38) / 48));
-          x += (u - 0.5) * 1.5 * w.half.x;
-          z += Math.sin(p.midi * 1.7) * 0.35 * w.half.y;
-        }
-        const strength = Math.min(1.2, p.vel * (p.section === 'percussion' ? 1.1 : 0.8)) * (calm ? 0.35 : 1);
+        const [x, z] = notePosition(p.section, p.midi, p.stroke as Stroke | undefined, p.time, w.center, w.half);
+        const strength = bloomStrength(p.vel, status.level, p.section, calm);
         w.ripple(x, z, p.time, strength);
+        this.onsets++;
+        // motes leave the surface toward the listener
+        this.world3.set(x, 0.02, z);
+        w.mesh.localToWorld(this.world3);
+        this.nrm.set(0, 1, 0).transformDirection(v.root.matrixWorld);
+        if (this.nrm.dot(this.tmp.subVectors(this.head, this.world3)) < 0) this.nrm.negate();
+        const motes = calm ? 1 : Math.round(2 + 4 * Math.min(1, strength));
+        this.sparks.spawn(this.world3, this.nrm, LIGHT_COLOR[p.section], motes, strength, p.time);
       }
     }
     const tau = calm ? 0.25 : 0.05;
@@ -86,6 +113,11 @@ export class LightSystem extends createSystem({}) {
     const cutAge = status.cutAt >= 0 ? now - status.cutAt : Infinity;
     const dark = cutAge < 0 ? 0 : cutAge < 1.2 ? 1 : 1 - smoothstep(1.2, 3.2, cutAge);
     const dyn = status.level;
+    const playing = status.phase === 'playing' || status.phase === 'countIn' || status.phase === 'fermata';
+    const beat = playing && status.phase !== 'fermata' ? beatFlash(status.beatPhase, status.beatInBar, status.bpm) : 0;
+    const sweep = barSweep(status.beatInBar, status.beatPhase, status.beatsPerBar);
+    const cov = floodCoverage(dyn);
+    const gain = floodGain(dyn);
 
     SECTIONS.forEach((s, i) => {
       const v = st.sections[s];
@@ -103,9 +135,16 @@ export class LightSystem extends createSystem({}) {
       v.cue *= Math.exp(-dt * 2.2);
       v.hint *= Math.exp(-dt * 0.8);
       const hintPulse = v.hint > 0.02 ? v.hint * (0.5 + 0.5 * Math.sin(now * 10)) * 0.35 : 0;
+      const level = this.level[s];
+      this.peak[s] = level * gain + beat;
       v.wash.set({
-        level: this.level[s] * (0.35 + 0.65 * dyn),
+        level,
         dyn,
+        cov,
+        gain,
+        beat: beat * (1 - dark),
+        sweep,
+        sweepOn: status.phase === 'playing' && !calm ? 1 : 0,
         time: now,
         hover: v.hover,
         cue: (v.cue * 0.9 + hintPulse) * (calm ? 0.5 : 1),
@@ -119,6 +158,19 @@ export class LightSystem extends createSystem({}) {
       const mix = this.conductor?.perf?.mix[s] ?? 'on';
       setLabelState(v, mix !== 'on' ? mix : v.hint > 0.3 ? 'cue!' : '');
     });
+
+    if (dark >= 1) this.sparks.clear();
+    this.sparks.update(now, this.pxHalfHeight());
+    // the baton trail follows the conducting fingertip
+    const c = this.conductor;
+    const tracked = !!c && c.hands.tracked.right;
+    if (tracked && c) {
+      const R = c.hands.joints.right;
+      this.baton.trail.push(now, R[J.indexTip * 3], R[J.indexTip * 3 + 1], R[J.indexTip * 3 + 2]);
+    }
+    const showBaton = tracked && rt.settings.mode === 'conduct' && status.phase !== 'results' && !status.menuOpen;
+    const flash = status.ictusAt > 0 ? Math.exp(-Math.max(0, now - status.ictusAt) / 0.18) : 0;
+    this.baton.update(now, this.head, flash * (calm ? 0.4 : 1), showBaton);
 
     // listen mode: small hand sweeps paint light where the hand's ray meets a surface
     if (this.conductor?.perf?.opts.mode === 'listen' && this.conductor) {
@@ -140,8 +192,19 @@ export class LightSystem extends createSystem({}) {
         const view = Object.values(st.sections).find((x) => x.wash.mesh === hit.object);
         if (!view) continue;
         const local = view.wash.mesh.worldToLocal(hit.point.clone());
-        view.wash.ripple(local.x, local.z, now, Math.min(1, speed / 1.5) * (calm ? 0.35 : 0.9));
+        const str = Math.min(1, speed / 1.5) * (calm ? 0.35 : 0.9);
+        view.wash.ripple(local.x, local.z, now, str);
+        this.nrm.set(0, 1, 0).transformDirection(view.root.matrixWorld);
+        if (this.nrm.dot(this.tmp.subVectors(this.head, hit.point)) < 0) this.nrm.negate();
+        this.sparks.spawn(hit.point, this.nrm, LIGHT_COLOR[view.section], calm ? 1 : 4, str, now);
       }
     }
+  }
+
+  /** Half the per-eye framebuffer height in pixels (sizes the motes). */
+  private pxHalfHeight(): number {
+    const layer = this.renderer.xr.getSession()?.renderState.baseLayer;
+    const h = layer?.framebufferHeight ?? this.renderer.domElement.height;
+    return Math.max(200, h / 2);
   }
 }
