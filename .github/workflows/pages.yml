@@ -1,0 +1,62 @@
+# Builds the Mebae landing (site root) and the IWSDK app (/app/) and publishes
+# them to GitHub Pages: https://nickthelegend.github.io/mebae/ and .../mebae/app/
+# Repo settings: Pages source = "GitHub Actions". Optional repo variable
+# MEBAE_COACH_URL = the deployed packages/proxy URL (https://<project>.vercel.app/api/coach);
+# without it the app's voice coach shows "AI unavailable: setup required".
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Core tests
+        working-directory: packages/core
+        run: npm ci && npm test
+      - name: Proxy tests (offline; live tests skip without a key)
+        working-directory: packages/proxy
+        run: npm test
+      - name: Build the app
+        working-directory: packages/app
+        env:
+          MEBAE_BASE: /mebae/app/
+          VITE_MEBAE_COACH_URL: ${{ vars.MEBAE_COACH_URL }}
+        run: npm ci && npm run typecheck && npm run build
+      - name: Assemble the site
+        run: |
+          mkdir -p site
+          cp -R packages/landing/. site/
+          rm -f site/package.json
+          cp -R packages/app/dist site/app
+          touch site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
