@@ -88,6 +88,13 @@ async function quest() {
   // dynamics: left palm high while conducting
   const d = step('conduct', { bpm: 96, seconds: 2.5, raise: 0, left: -0.03 }, 30000);
   C.ok('left palm high reads at least f', d.status.level >= 4 / 6 && ['f', 'ff'].includes(d.status.dynMark), { level: d.status.level, mark: d.status.dynMark });
+  // the light show: bright, on every note, and the text readable from the seat
+  const lg = step('state', { read: ['light', 'legibility'] });
+  const peaks = Object.values(lg.light.peak);
+  C.ok('notes bloom on their surfaces (one bloom per scheduled note)', lg.light.notesBloomed >= 20, lg.light.notesBloomed);
+  C.ok('at f/ff at least one section washes its surface at full brightness (peak >= 1)', Math.max(...peaks) >= 1, lg.light.peak);
+  const small = Object.entries(lg.legibility).filter(([k, v]) => !k.endsWith('WidthM') && v < 0.018);
+  C.ok('every HUD and section-label text >= 18 mm cap height per metre of distance', Object.keys(lg.legibility).length >= 5 && small.length === 0, lg.legibility);
   const shot = join(RESULTS, `${tag}-playing.png`);
   cli(['browser', 'screenshot', '--output-file', shot]);
 
