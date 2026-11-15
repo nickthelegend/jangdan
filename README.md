@@ -12,7 +12,8 @@ Meta VR Start Developer Competition 2026 · Track: **Entertainment** (music visu
 | | |
 |---|---|
 | Spec | `grokbot/specs/meta-vr/jangdan.md` |
-| Test recordings (emulator) | `grokbot/videos/jangdan/` |
+| Film (2:51) and test recordings (emulator) | `grokbot/videos/jangdan/jangdan-film.mp4`, shot list `jangdan-film.md` |
+| Judge pass, Nov 15 | [docs/JUDGE-NOV15.md](docs/JUDGE-NOV15.md) |
 | Tests | [TESTING.md](TESTING.md) |
 | Submission draft | [HACKATHON_SUBMISSION_FORM.md](HACKATHON_SUBMISSION_FORM.md) |
 
@@ -35,6 +36,23 @@ at the strings and pinch" use real eye gaze. Both go to the same IWSDK `RayInter
 where your hand points. **Ghost** replays your last take of the piece (its tempo and dynamics). **One-hand mode**: tap
 down with the right index finger for the beat; the same hand's height sets the dynamics. **Calm light** caps ripples and
 flashes. Captions show every cue.
+
+## What you see while it plays
+
+Every note is light on the surface it plays from, and the two things your hands control are visible at a glance:
+
+- **Each note blooms.** A hot core flashes where the note lands (pitch runs low to high across the wall; janggu
+  strokes land left for *kung*, right for *deok*), then a ring of the section's colour sweeps the whole surface in under
+  a second and leaves a glowing wake. Light motes leave the surface toward you.
+- **Dynamics = how much of the wall glows.** At *pp* each section is a small pool; at *ff* the colour floods the whole
+  wall and the blooms run brighter.
+- **Tempo = the flash rate.** Every surface's frame flashes on each beat (the downbeat hardest), a line of light crosses
+  each surface once per bar, and a baton trail follows your conducting fingertip and flashes yellow on each ictus.
+- **The conductor's stand** (head-locked, low in view): beat ring, BPM in large type, "faster +26" / "slower -12"
+  against the written tempo, the dynamic mark and a hairpin meter.
+- Text is sized by rule: at least 18 mm cap height per metre of viewing distance (HUD at 1 m: 18.5 mm; wall labels
+  scale with their distance and hang high on the wall, clear of the light). The rule and the light-show maths live in
+  `packages/core/src/lightshow.ts` and are unit-tested; the e2e reads the live sizes back from the app.
 
 ## Why the real room matters
 
@@ -111,6 +129,7 @@ node e2e/run.mjs quest home_office
 node e2e/run.mjs complete sunlit_living_room
 node e2e/run.mjs glasses sunlit_living_room
 node e2e/record.mjs sunlit_living_room jangdan-whoa   # 20-40 s clip with the program's real audio
+node e2e/film.mjs                                     # the film's takes (1920x1080, real audio, hands + gaze only)
 npx iwsdk dev down
 ```
 

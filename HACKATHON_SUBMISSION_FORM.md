@@ -14,7 +14,7 @@ Rules digest: `grokbot/specs/meta-vr/RULES.md`.
 | Platform | Immersive Web SDK (WebXR), submitted as a public URL opened in the Meta Quest Browser |
 | Hands-first | Yes: the whole experience, menu included, works with hands only; no controller paths exist |
 | Target launch date | (Representative decides; the build is a web URL, so "at submission" is honest) |
-| Video | < 3 min, public on YouTube or Vimeo, with sound, real footage (emulator footage is allowed by the rules) |
+| Video | `grokbot/videos/jangdan/jangdan-film.mp4`: 2:51, 1920×1080, the app's own sound, IWER emulator footage (Quest 3 and Meta VR Glasses profiles; allowed by the rules), captions; shot list in `jangdan-film.md`. Upload public to YouTube or Vimeo |
 | Team | Representative: (name, email, role: composer, voice tuning, playtesting, owner of repo/URL/video/submission). Nick (nickthelegend): non-Representative member, engineering. |
 
 ## Description (≈ 480 words)
@@ -62,12 +62,12 @@ Glasses); a 0.6 s pinch-hold cycles solo and mute. The palm-up wrist menu is UIK
 | Innovation & Creativity | Your room's geometry decides where every section sits, how it is lit and how it sounds (reverb from room volume). Daily seeded pieces and a saved togetherness score drive repeat play |
 | Experience Design | Music in under 10 s (raise, drop). Seated, within arm's reach. Lean-back Listen mode for Entertainment. Passthrough is purposeful: walls host the sections. Captions for cues, calm-light and one-hand modes |
 | Technical Implementation | Beat detection from WebXR hand joints, a look-ahead AudioContext scheduler, plane-clipped light decals, HRTF sources at plane centroids, room-derived generated IR, Glasses gaze cueing with a FoV-aware HUD. Emulator metrics in TESTING.md |
-| Polish & Presentation | Obangsaek palette (one colour per section plus white), four crafted synth voices, honest video with sound |
+| Polish & Presentation | Every note blooms across its wall in its section's colour; dynamics flood the wall, the beat flashes every surface, a baton trail follows your hand; a conductor's stand shows BPM and the dynamic mark; all text ≥ 18 mm cap height per metre (tested). Obangsaek palette, four synth voices, a 2:51 captioned film with the app's own sound |
 
 ## What the Representative must do (from the spec)
 
 1. Be eligible and a VR Start member; join Devpost; create the team; add Nick as a non-Representative member.
 2. Genuinely own part of the build: compose (or rewrite) the three pieces as JSON scores, tune the four voices in
    `packages/core/src/voices.ts`, playtest the conducting feel.
-3. Own the repo, the public URL (e.g. GitHub Pages from `packages/app/dist`), the video (with audio) and the submission.
+3. Own the repo, the public URL (GitHub Pages workflow prepared on branch `pages`: landing at `/jangdan/`, app at `/jangdan/app/`), the video (with audio) and the submission.
 4. With a Quest 3/3S: check audio latency and beat feel, run the calibration tap, and do one real room pass.
