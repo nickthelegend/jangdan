@@ -36,7 +36,7 @@ jobs:
         working-directory: packages/app
         env:
           NODE_ENV: production
-        run: npm ci && npm run typecheck && npm run build
+        run: npm ci --include=dev && npm run typecheck && npm run build
       - name: Assemble the site
         run: |
           mkdir -p site
